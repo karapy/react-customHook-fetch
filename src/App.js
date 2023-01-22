@@ -1,51 +1,43 @@
-import { Fragment, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import Error from "./pages/Error";
+import HomePage from './pages/HomePage';
+import ProductDetail from "./pages/ProductDetail";
+import ProductsPage from './pages/ProductsPage';
+import RootLayout from "./pages/RootLayout";
 
-import Cart from './components/Cart/Cart';
-import Layout from './components/Layout/Layout';
-import Products from './components/Shop/Products';
-import Notification from './components/UI/Notification';
-import { sendCartData, fetchCartData } from './store/cart-actions';
 
-let isInitial = true;
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout/>,
+    errorElement: <Error/>,
+    children: [
+      {
+        index: true, // path: ''
+        element: <HomePage/>
+      },
+      {
+        path: 'products',
+        element: <ProductsPage/>
+      },
+      {
+        path: 'product/:id',
+        element: <ProductDetail/>
+      }
+
+    ]
+  },
+  
+]); 
 
 function App() {
-  const dispatch = useDispatch();
-  const showCart = useSelector((state) => state.ui.cartIsVisible);
-  const cart = useSelector((state) => state.cart);
-  const notification = useSelector((state) => state.ui.notification);
-  
-  useEffect(()=> {
-    //
-    dispatch(fetchCartData())
-  }, [dispatch])
-
-  useEffect(() => {
-    if (isInitial) {
-      isInitial = false;
-      return;
-    }
-    console.log(cart.items)
-    if (cart.changed) {
-      dispatch(sendCartData(cart));
-    }
-    
-  }, [cart, dispatch]);
-
   return (
-    <Fragment>
-      {notification && (
-        <Notification
-          status={notification.status}
-          title={notification.title}
-          message={notification.message}
-        />
-      )}
-      <Layout>
-        {showCart && <Cart />}
-        <Products />
-      </Layout>
-    </Fragment>
+    <>
+      <RouterProvider router={router}/>
+    </>
   );
 }
 
