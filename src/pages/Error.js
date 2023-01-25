@@ -1,14 +1,29 @@
 import React from "react";
-import MainNav from "../components/MainNav";
+import PageContent from "./PageContent";
+import { useRouteError } from "react-router";
+import { Link } from "react-router-dom";
+import MainNavigation from "../components/MainNavigation";
 
 function Error() {
+  const error = useRouteError();
+  console.log(error.data.message)
+  let title = "An error occured";
+//   let message = "Something went wrong";
+//   if (error.data.includes("Error: No route matches URL")) {
+//     message = "Page not Found";
+//   }
+
+//   if (error.status === 500) {
+//     message = error.data;
+//   }
+
   return (
     <>
-      <MainNav />
-      <div>
-        <h1>An Error Occured!</h1>
-        <p>could not find this page!</p>
-      </div>
+      <MainNavigation />
+      <PageContent title={title}>
+        <p>{error.data.message}</p>
+        <Link to="..">Back</Link>
+      </PageContent>
     </>
   );
 }
