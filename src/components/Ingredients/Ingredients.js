@@ -7,22 +7,7 @@ import style from "./Ingridients.module.css";
 import ErrorModal from "../UI/ErrorModal";
 
 
-const ingredientReducer = (state, action) => {
-  //
-  switch (action.type) {
-    case "SET":
-      return action.ingredients;
 
-    case "ADD":
-      return [...state, action.ingredient];
-
-    case "DELETE":
-      return state.filter((ing) => ing.id !== action.id);
-
-    default:
-      throw new Error("Should not get there!");
-  }
-};
 
 const httpReducer = (state, action) => {
   switch (action.type) {
@@ -57,8 +42,9 @@ const Ingredients = () => {
     console.log("rendering");
   }, [userIngredients]);
 
-  const addIngredientHandler = (ingredient) => {
+  const addIngredientHandler = useCallback((ingredient) => {
     // setIsloading(true);
+    console.log("addIngredientHandler recreated")
     dispatchHttp({ type: 'SEND_REQUEST'})
 
     fetch(
@@ -95,13 +81,13 @@ const Ingredients = () => {
     return () => {
       clearTimeout(timer);
     };
-  };
+  }, []);
 
-  const removeIngredientHandler = (ingredientId) => {
+  const removeIngredientHandler = useCallback((ingredientId) => {
     // setIsloading(true);
     dispatchHttp({ type: 'SEND_REQUEST'})
     fetch(
-      `https://react-http-e4fdc-default-rtdb.europe-west1.firebasedatabase.app/ingredient/${ingredientId}.j1son`,
+      `https://react-http-e4fdc-default-rtdb.europe-west1.firebasedatabase.app/ingredient/${ingredientId}.json`,
       {
         method: "DELETE",
       }
@@ -124,7 +110,7 @@ const Ingredients = () => {
     return () => {
       clearTimeout(timer);
     };
-  };
+  }, []);
 
   const modal = (
     <div

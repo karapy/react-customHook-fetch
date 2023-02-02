@@ -1,3 +1,4 @@
+import { Button } from 'flowbite-react';
 import React, { useState } from 'react';
 
 import Card from '../UI/Card';
@@ -6,7 +7,7 @@ import './IngredientForm.css';
 const IngredientForm = React.memo(props => {
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredAmount, setEnteredAmount] = useState('');
-
+  console.log("rendering IngredientForm")
   const submitHandler = event => {
     event.preventDefault();
     props.onAddIngredient({ title: enteredTitle, amount: enteredAmount });
@@ -39,7 +40,7 @@ const IngredientForm = React.memo(props => {
             />
           </div>
           <div className="ingredient-form__actions">
-            <button type="submit">Add Ingredient</button>
+            <Button type="submit">Add Ingredient</Button>
           </div>
         </form>
       </Card>
