@@ -2,8 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 
 import Card from "../UI/Card";
 import "./Search.css";
+import useHttp from "../../hooks/http";
+import ErrorModal from "../UI/ErrorModal";
+import style from "./Ingridients.module.css";
 
 const Search = React.memo((props) => {
+  const {
+    isLoading,
+    data,
+    error,
+    sendRequest,
+    clear,
+  } = useHttp();
   const [enteredFilter, setEnteredFilter] = useState("");
   const { onLoadIngridents } = props;
   const inputRef = useRef();
@@ -16,34 +26,53 @@ const Search = React.memo((props) => {
             ? ""
             : `?orderBy="title"&equalTo="${enteredFilter}"`;
 
-        fetch(
+        console.log("Send request for search");
+        sendRequest(
           "https://react-http-e4fdc-default-rtdb.europe-west1.firebasedatabase.app/ingredient.json" +
-            query
-        )
-          .then((response) => {
-            return response.json();
-          })
-          .then((responseData) => {
-            const loadedIngredients = [];
-            for (const key in responseData) {
-              loadedIngredients.push({
-                id: key,
-                title: responseData[key].title,
-                amount: responseData[key].amount,
-              });
-            }
-            onLoadIngridents(loadedIngredients);
-          });
+            query,
+          "GET"
+        );
       }
     }, 1000);
+
     return () => {
-      clearTimeout(timer)
-      console.log("clearing timer")
+      clearTimeout(timer);
+      console.log("clearing timer");
+    };
+  }, [enteredFilter, sendRequest, inputRef]);
+
+  useEffect(() => {
+    if (!error && !isLoading && data) {
+      const loadedIngredients = [];
+      for (const key in data) {
+        loadedIngredients.push({
+          id: key,
+          title: data[key].title,
+          amount: data[key].amount,
+        });
+      }
+      onLoadIngridents(loadedIngredients);
     }
-  }, [enteredFilter, onLoadIngridents]);
+    console.log(error);
+  }, [data, isLoading, error, onLoadIngridents]);
+
+  if (isLoading) {
+    return (
+      <div
+        style={{ display: isLoading ? "flex" : "none" }}
+        className={style.modal}
+      >
+        <div className={style.modalcontent}>
+          <div className={style.loader}></div>
+          <div className={style.modaltext}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="search">
+      {error && <ErrorModal onClose={clear}>{error}</ErrorModal>}
       <Card>
         <div className="search-input">
           <label>Filter by Title</label>
